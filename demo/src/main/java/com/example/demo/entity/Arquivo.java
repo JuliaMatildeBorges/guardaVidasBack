@@ -30,6 +30,6 @@ public class Arquivo {
     private Long tamanho;
 
     @Column(nullable = false, length = 500)
-    private String caminhho;
+    private String caminho;
 
 }

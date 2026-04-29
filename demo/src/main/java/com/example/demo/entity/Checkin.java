@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "checkins")
 @EqualsAndHashCode(callSuper = false)
-public class Checkin {
+public class Checkin extends BaseEntity{
 
     @ManyToOne
     private Posto posto;
