@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.enums.NivelAcesso;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.Email;
