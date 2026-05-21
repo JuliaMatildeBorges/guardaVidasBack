@@ -14,4 +14,6 @@ public class UsuarioController extends BaseController<UsuarioDTO> {
         super(service);
     }
 
+
+
 }

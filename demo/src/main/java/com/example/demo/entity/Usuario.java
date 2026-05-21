@@ -22,8 +22,9 @@ public class Usuario extends BaseEntity {
     private String email;
 
     @Column(name = "senha", nullable = false)
-    private String senha;
+    private String senha;       
 
     @Column(name = "nivel_acesso", nullable = false)
     private NivelAcesso nivelAcesso = NivelAcesso.PADRAO;
 }
+

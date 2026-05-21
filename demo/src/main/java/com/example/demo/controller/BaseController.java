@@ -26,7 +26,7 @@ public abstract class BaseController<D> {
         return service.create(dto);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public D read(@PathVariable Long id){
         return service.read(id);
     }
@@ -41,9 +41,11 @@ public abstract class BaseController<D> {
         return service.update(id, dto);
     }
 
-    @DeleteMapping("{id}")
-    public void delete(@PathVariable Long id){
+    @DeleteMapping("/{id}")
+    public D delete(@PathVariable Long id){
+        D dto = service.read(id);
         service.softDelete(id);
+        return dto;
     }
 
 }

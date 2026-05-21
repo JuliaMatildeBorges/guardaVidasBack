@@ -21,6 +21,8 @@ public class UsuarioDTO {
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String senha;
+    private String senha;   
+
+    
 
 }
