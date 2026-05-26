@@ -21,15 +21,15 @@ public class UsuarioService extends BaseService<Usuario, UsuarioDTO> {
 
     private UsuarioRepository repository;
 
-    @Autowired
+  /*   @Autowired
     private EmailService emailService;
-
+ */
     public UsuarioService(UsuarioRepository repository){
         super(repository);
         this.repository = repository;
     }
 
-    // Recuperacao de senha
+ /*    // Recuperacao de senha
     @Transactional
     public void solicitarCodigo(RecuperacaoSolicitacaoDTO dto){
         String email = dto.getEmail();
@@ -50,6 +50,6 @@ public class UsuarioService extends BaseService<Usuario, UsuarioDTO> {
         }
 
 
-    }
+    } */
 
 }

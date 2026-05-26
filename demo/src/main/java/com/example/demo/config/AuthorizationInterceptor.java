@@ -37,7 +37,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         // Valida o token JWT do header
         String token = extractToken(request);
         if (token == null || !jwtUtil.validateToken(token)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, "Token ausente ou inválido.");
             return false;
         }
 
@@ -58,7 +58,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         if (hasAnnotation(handlerMethod, Admin.class)) {
             boolean isAdmin = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
             if (!isAdmin) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                writeError(response, HttpServletResponse.SC_FORBIDDEN, "Acesso negado para este usuário.");
                 return false;
             }
         }
@@ -77,5 +77,12 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     private boolean hasAnnotation(HandlerMethod handler, Class<? extends Annotation> annotation) {
         return AnnotatedElementUtils.hasAnnotation(handler.getMethod(), annotation)
                 || AnnotatedElementUtils.hasAnnotation(handler.getBeanType(), annotation);
+    }
+
+    private void writeError(HttpServletResponse response, int status, String message) throws Exception {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"message\":\"" + message + "\"}");
     }
 }

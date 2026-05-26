@@ -17,4 +17,6 @@ public class CheckinDTO {
 
     private MultipartFile foto;
 
+    private MultipartFile[] fotos;
+
 }

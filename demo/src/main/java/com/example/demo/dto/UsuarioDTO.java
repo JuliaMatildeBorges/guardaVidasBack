@@ -20,9 +20,11 @@ public class UsuarioDTO {
     @NotBlank(message = "O email deve ser preenchido.")
     private String email;
 
+    private String cpf;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;   
 
-    
+    private String tipoUsuario;
 
 }

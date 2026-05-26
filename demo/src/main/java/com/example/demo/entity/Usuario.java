@@ -23,11 +23,17 @@ public class Usuario extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "cpf")
+    private String cpf;
+
     @Column(name = "senha", nullable = false)
     private String senha;       
 
     @Column(name = "nivel_acesso", nullable = false)
     private NivelAcesso nivelAcesso = NivelAcesso.PADRAO;
+
+    @Column(name = "tipo_usuario")
+    private String tipoUsuario;
 
     // Campos para redefinicao de senha
     private String codigoRecuperacao;

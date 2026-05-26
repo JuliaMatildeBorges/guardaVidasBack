@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,12 +62,26 @@ public class AuthController {
     }
 
     @GetMapping("/ping")    
-    public void pong(){
-        System.out.println("Pong!");
+    @Public
+    public ResponseEntity<?> pong(){
+        return ResponseEntity.ok(Map.of("message", "Pong!"));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return ResponseEntity.ok(Map.of(
+            "email", authentication.getName(),
+            "tipo", authentication.getAuthorities().stream()
+                .findFirst()
+                .map(authority -> authority.getAuthority().replace("ROLE_", ""))
+                .orElse("")
+        ));
     }
 
 
-    @Public
+  /*   @Public
     @PostMapping("/recuperar-senha/solicitar")
     public ResponseEntity<?> solicitarCodigo(@RequestBody @Valid RecuperacaoSolicitacaoDTO dto){
         usuarioService.solicitarCodigo(dto);
@@ -78,7 +94,7 @@ public class AuthController {
         
         return ResponseEntity.ok(Map.of("message", "Senha alterada com sucesso"));
     }
-
+ */
 
 
 }

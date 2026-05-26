@@ -30,7 +30,7 @@ public class CorsConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/*", config);
+        source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);        
     }

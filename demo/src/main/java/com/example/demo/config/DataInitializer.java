@@ -21,20 +21,24 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initDatabase(UsuarioRepository repository){
         return args -> {
-            if(repository.count() <= 0){
-                Usuario usuario = new Usuario();
-
-                usuario.setEmail("admin@admin.com");
-                usuario.setNivelAcesso(NivelAcesso.ADMIN);
-                usuario.setSenha(passwordEncoder.encode("123456789"));
-
-                repository.save(usuario);
-
-                System.out.println("Usuário ADMIN criado com sucesso: admin@admin.com / 123456789");
-            }else{
-                System.out.println("Usuário ADMIN já existe no banco!");
-            }
+            salvarUsuario(repository, "admin@admin.com", "00000000000", NivelAcesso.ADMIN, "0");
+            salvarUsuario(repository, "salvavidas@salvavidas.com", "11111111111", NivelAcesso.PADRAO, "1");
+            System.out.println("Usuário ADMIN disponível: admin@admin.com / 123456789");
+            System.out.println("Usuário SALVA-VIDAS disponível: salvavidas@salvavidas.com / 123456789");
         };
+    }
+
+    private void salvarUsuario(UsuarioRepository repository, String email, String cpf, NivelAcesso nivel, String tipoUsuario) {
+        Usuario usuario = repository.findByEmail(email).orElseGet(Usuario::new);
+
+        usuario.setEmail(email);
+        usuario.setCpf(cpf);
+        usuario.setNivelAcesso(nivel);
+        usuario.setTipoUsuario(tipoUsuario);
+        usuario.setSenha(passwordEncoder.encode("123456789"));
+        usuario.setAtivo(true);
+
+        repository.save(usuario);
     }
     
 
