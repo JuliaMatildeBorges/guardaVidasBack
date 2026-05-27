@@ -21,35 +21,9 @@ public class UsuarioService extends BaseService<Usuario, UsuarioDTO> {
 
     private UsuarioRepository repository;
 
-  /*   @Autowired
-    private EmailService emailService;
- */
     public UsuarioService(UsuarioRepository repository){
         super(repository);
         this.repository = repository;
     }
-
- /*    // Recuperacao de senha
-    @Transactional
-    public void solicitarCodigo(RecuperacaoSolicitacaoDTO dto){
-        String email = dto.getEmail();
-
-        Usuario usuario = repository.findByEmail(email).orElseThrow();
-
-        String codigo = String.valueOf(10000000 + new Random().nextInt(90000000));
-
-        usuario.setCodigoRecuperacao(codigo);
-        usuario.setCodigoRecuperacaoExpiracao(LocalDateTime.now().plusMinutes(20));
-
-        repository.save(usuario);
-
-        try{
-            emailService.enviarEmail(email, "SOLICITACAO DE RECUPERACAO DE SENHA", "SEU CÓDIGO: " + codigo);
-        } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ERRO NO ENDEREÇO DE EMAIL");
-        }
-
-
-    } */
 
 }
