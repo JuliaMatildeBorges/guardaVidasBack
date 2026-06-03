@@ -20,6 +20,8 @@ public class CheckoutDTO {
 
     private MultipartFile[] fotos;
 
+    private String timestampCaptura;
+
     @NotNull(message = "Informe as prevenções da manhã.")
     @Min(value = 0, message = "O valor não pode ser negativo.")
     private Integer prevencoesManha;

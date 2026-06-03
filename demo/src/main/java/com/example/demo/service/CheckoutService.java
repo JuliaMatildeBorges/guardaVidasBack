@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,15 +36,38 @@ public class CheckoutService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private CheckService checkService;
+
     public CheckoutResponseDTO checkout(CheckoutDTO dto){
         
+        // Valida se a foto foi tirada em tempo real no momento da captura
+        checkService.validarTimestampCaptura(dto.getTimestampCaptura());
+
         Posto posto = postoRepository.findById(dto.getPostoId()).orElseThrow();
         Usuario usuario = usuarioRepository.findByEmail(usuarioLogado()).orElseThrow();
         List<MultipartFile> fotos = normalizarFotos(dto.getFotos(), dto.getFoto());
+        LocalDateTime inicio = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime fim = LocalDateTime.now().toLocalDate().atTime(LocalTime.MAX);
 
-        Checkout checkout = new Checkout();
-        checkout.setPosto(posto);
-        checkout.setUsuario(usuario);
+        Checkout checkout = checkoutRespository
+            .findFirstByUsuarioAndPostoAndCreatedAtBetweenOrderByCreatedAtDesc(usuario, posto, inicio, fim)
+            .orElseGet(() -> {
+                Checkout novo = new Checkout();
+                novo.setPosto(posto);
+                novo.setUsuario(usuario);
+                novo.setFotos(new ArrayList<>());
+                return novo;
+            });
+
+        if (checkout.getFotos() == null) {
+            checkout.setFotos(new ArrayList<>());
+        }
+
+        if (checkout.getFotos().size() + fotos.size() > 3) {
+            throw new IllegalArgumentException("Este checkout já possui " + checkout.getFotos().size() + " foto(s). O limite por ação é 3.");
+        }
+
         checkout.setPrevencoesManha(dto.getPrevencoesManha());
         checkout.setPrevencoesTarde(dto.getPrevencoesTarde());
         checkout.setLesoesAguaVivaManha(dto.getLesoesAguaVivaManha());
@@ -51,8 +75,8 @@ public class CheckoutService {
 
         List<Arquivo> arquivos = fotos.stream().map(arquivoService::upload).toList();
 
-        checkout.setFoto(arquivos.get(0));
-        checkout.setFotos(arquivos);
+        checkout.getFotos().addAll(arquivos);
+        checkout.setFoto(checkout.getFotos().get(0));
 
         Checkout checkoutSalvo = checkoutRespository.save(checkout);
         CheckoutResponseDTO crd = new CheckoutResponseDTO();
@@ -60,7 +84,7 @@ public class CheckoutService {
         crd.setPosto(posto.getNome());
         crd.setHorario(checkoutSalvo.getCreatedAt());
         crd.setStatus(statusCheckout(checkoutSalvo.getCreatedAt()));
-        crd.setFotos(arquivos.stream().map(Arquivo::getId).toList());
+        crd.setFotos(checkoutSalvo.getFotos().stream().map(Arquivo::getId).toList());
 
         return crd;
 

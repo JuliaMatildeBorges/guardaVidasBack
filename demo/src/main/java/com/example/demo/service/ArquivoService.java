@@ -125,4 +125,20 @@ public class ArquivoService {
         }
     }
 
+    /**
+     * Exclui fisicamente todos os arquivos registrados do disco e limpa a tabela de arquivos.
+     */
+    @Transactional
+    public void excluirTodosOsArquivos() {
+        java.util.List<Arquivo> arquivos = arquivoRepository.findAll();
+        for (Arquivo arquivo : arquivos) {
+            try {
+                java.nio.file.Files.deleteIfExists(java.nio.file.Paths.get(arquivo.getCaminho()));
+            } catch (java.io.IOException e) {
+                System.err.println("Erro ao deletar arquivo fisico: " + arquivo.getCaminho() + ". " + e.getMessage());
+            }
+        }
+        arquivoRepository.deleteAll();
+    }
+
 }

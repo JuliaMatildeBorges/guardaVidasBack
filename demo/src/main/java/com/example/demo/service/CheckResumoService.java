@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.AcaoCheckResumoDTO;
@@ -19,6 +20,7 @@ import com.example.demo.entity.Posto;
 import com.example.demo.repository.CheckinRepository;
 import com.example.demo.repository.CheckoutRespository;
 import com.example.demo.repository.PostoRepository;
+import com.example.demo.repository.UsuarioRepository;
 
 @Service
 public class CheckResumoService {
@@ -32,6 +34,9 @@ public class CheckResumoService {
     @Autowired
     private CheckoutRespository checkoutRespository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     public List<PostoCheckResumoDTO> statusHoje() {
         LocalDate hoje = LocalDate.now();
         LocalDateTime inicio = hoje.atStartOfDay();
@@ -39,6 +44,20 @@ public class CheckResumoService {
 
         List<Checkin> checkins = checkinRepository.findByCreatedAtBetween(inicio, fim);
         List<Checkout> checkouts = checkoutRespository.findByCreatedAtBetween(inicio, fim);
+
+        return postoRepository.findAll().stream()
+            .map(posto -> montarResumo(posto, checkins, checkouts))
+            .toList();
+    }
+
+    public List<PostoCheckResumoDTO> meusChecksHoje() {
+        LocalDate hoje = LocalDate.now();
+        LocalDateTime inicio = hoje.atStartOfDay();
+        LocalDateTime fim = hoje.atTime(LocalTime.MAX);
+        var usuario = usuarioRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+
+        List<Checkin> checkins = checkinRepository.findByUsuarioAndCreatedAtBetween(usuario, inicio, fim);
+        List<Checkout> checkouts = checkoutRespository.findByUsuarioAndCreatedAtBetween(usuario, inicio, fim);
 
         return postoRepository.findAll().stream()
             .map(posto -> montarResumo(posto, checkins, checkouts))

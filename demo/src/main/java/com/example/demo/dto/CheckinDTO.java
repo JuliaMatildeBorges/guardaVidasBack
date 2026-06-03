@@ -19,4 +19,6 @@ public class CheckinDTO {
 
     private MultipartFile[] fotos;
 
+    private String timestampCaptura;
+
 }
