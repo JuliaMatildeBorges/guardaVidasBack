@@ -16,4 +16,13 @@ public interface UsuarioRepository extends BaseRepository<Usuario, Long> {
     """)
     Optional<Usuario> findByEmail(String email);
 
+    @Query("""
+            SELECT u FROM Usuario u
+            WHERE u.cpf = :cpf
+            AND u.ativo = TRUE
+    """)
+    Optional<Usuario> findByCpf(String cpf);
+
+    boolean existsByCpf(String cpf);
+
 }

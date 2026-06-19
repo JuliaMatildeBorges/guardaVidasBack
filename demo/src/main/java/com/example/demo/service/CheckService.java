@@ -48,7 +48,7 @@ public class CheckService {
         validarTimestampCaptura(dto.getTimestampCaptura());
 
         Posto posto = postoRepository.findById(dto.getPostoId()).orElseThrow();
-        Usuario usuario = usuarioRepository.findByEmail(usuarioLogado()).orElseThrow();
+        Usuario usuario = usuarioRepository.findByCpf(usuarioLogado()).orElseThrow();
         List<MultipartFile> fotos = normalizarFotos(dto.getFotos(), dto.getFoto());
         LocalDateTime inicio = LocalDateTime.now().toLocalDate().atStartOfDay();
         LocalDateTime fim = LocalDateTime.now().toLocalDate().atTime(LocalTime.MAX);

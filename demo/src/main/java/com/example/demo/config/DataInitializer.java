@@ -21,21 +21,22 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initDatabase(UsuarioRepository repository){
         return args -> {
-            salvarUsuario(repository, "admin@admin.com", "00000000000", NivelAcesso.ADMIN, "0");
-            salvarUsuario(repository, "salvavidas@salvavidas.com", "11111111111", NivelAcesso.PADRAO, "1");
-            System.out.println("Usuário ADMIN disponível: admin@admin.com / 123456789");
-            System.out.println("Usuário SALVA-VIDAS disponível: salvavidas@salvavidas.com / 123456789");
+            salvarUsuario(repository, "Administrador", "11111111111", "111111", NivelAcesso.ADMIN, "0");
+            salvarUsuario(repository, "Usuário Comum", "22222222222", "222222", NivelAcesso.USUARIO, "1");
+            System.out.println("Usuário ADMIN disponível: 11111111111 / 111111");
+            System.out.println("Usuário COMUM disponível: 22222222222 / 222222");
         };
     }
 
-    private void salvarUsuario(UsuarioRepository repository, String email, String cpf, NivelAcesso nivel, String tipoUsuario) {
-        Usuario usuario = repository.findByEmail(email).orElseGet(Usuario::new);
+    private void salvarUsuario(UsuarioRepository repository, String nome, String cpf, String senha, NivelAcesso nivel, String tipoUsuario) {
+        Usuario usuario = repository.findByCpf(cpf).orElseGet(Usuario::new);
 
-        usuario.setEmail(email);
+        usuario.setNome(nome);
         usuario.setCpf(cpf);
+        usuario.setEmail(cpf + "@local");
         usuario.setNivelAcesso(nivel);
         usuario.setTipoUsuario(tipoUsuario);
-        usuario.setSenha(passwordEncoder.encode("123456789"));
+        usuario.setSenha(passwordEncoder.encode(senha));
         usuario.setAtivo(true);
 
         repository.save(usuario);

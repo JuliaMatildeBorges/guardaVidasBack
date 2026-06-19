@@ -21,6 +21,7 @@ import com.example.demo.dto.AuthDTO;
 import com.example.demo.entity.Usuario;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.UsuarioService;
+import com.example.demo.util.CpfUtil;
 
 import jakarta.validation.Valid;
 
@@ -43,22 +44,25 @@ public class AuthController {
     @PostMapping("/login")
     @Public
     public ResponseEntity<?> login(@RequestBody @Valid AuthDTO dto) {
-        String email = dto.getEmail();
+        String cpf = CpfUtil.somenteNumeros(dto.getCpf());
         String senha = dto.getSenha(); // TEXTO PURO
 
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByCpf(cpf);
 
         if (usuarioOpt.isPresent() && passwordEncoder.matches(senha, usuarioOpt.get().getSenha())) {
             String nivelAcesso = usuarioOpt.get().getNivelAcesso().toString();
 
-            String token = jwtUtil.generateToken(email, nivelAcesso);
+            String token = jwtUtil.generateToken(cpf, nivelAcesso);
 
             return ResponseEntity.ok(Map.of(
-                "token", token, "tipo", nivelAcesso
+                "token", token,
+                "tipo", nivelAcesso,
+                "cpf", CpfUtil.formatar(usuarioOpt.get().getCpf()),
+                "nome", usuarioOpt.get().getNome()
             ));
         }
 
-        return ResponseEntity.status(401).body("Credenciais Inválidas!");
+        return ResponseEntity.status(401).body(Map.of("message", "CPF ou senha incorretos."));
     }
 
     @GetMapping("/ping")    
@@ -70,9 +74,11 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> me(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuario = usuarioRepository.findByCpf(authentication.getName()).orElseThrow();
 
         return ResponseEntity.ok(Map.of(
-            "email", authentication.getName(),
+            "cpf", CpfUtil.formatar(usuario.getCpf()),
+            "nome", usuario.getNome(),
             "tipo", authentication.getAuthorities().stream()
                 .findFirst()
                 .map(authority -> authority.getAuthority().replace("ROLE_", ""))

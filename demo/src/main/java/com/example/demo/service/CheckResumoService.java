@@ -54,7 +54,7 @@ public class CheckResumoService {
         LocalDate hoje = LocalDate.now();
         LocalDateTime inicio = hoje.atStartOfDay();
         LocalDateTime fim = hoje.atTime(LocalTime.MAX);
-        var usuario = usuarioRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+        var usuario = usuarioRepository.findByCpf(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
 
         List<Checkin> checkins = checkinRepository.findByUsuarioAndCreatedAtBetween(usuario, inicio, fim);
         List<Checkout> checkouts = checkoutRespository.findByUsuarioAndCreatedAtBetween(usuario, inicio, fim);
@@ -86,7 +86,7 @@ public class CheckResumoService {
         AcaoCheckResumoDTO dto = new AcaoCheckResumoDTO();
         dto.setHorario(checkin.getCreatedAt());
         dto.setStatus(checkin.getCreatedAt().toLocalTime().isAfter(LocalTime.of(8, 0)) ? "AMARELO" : "VERDE");
-        dto.setUsuario(checkin.getUsuario() != null ? checkin.getUsuario().getEmail() : "");
+        dto.setUsuario(checkin.getUsuario() != null ? checkin.getUsuario().getNome() : "");
         dto.setFotos(mapearFotos(checkin.getFotos()));
         return dto;
     }
@@ -95,7 +95,7 @@ public class CheckResumoService {
         AcaoCheckResumoDTO dto = new AcaoCheckResumoDTO();
         dto.setHorario(checkout.getCreatedAt());
         dto.setStatus(checkout.getCreatedAt().toLocalTime().isBefore(LocalTime.of(19, 0)) ? "AMARELO" : "VERDE");
-        dto.setUsuario(checkout.getUsuario() != null ? checkout.getUsuario().getEmail() : "");
+        dto.setUsuario(checkout.getUsuario() != null ? checkout.getUsuario().getNome() : "");
         dto.setFotos(mapearFotos(checkout.getFotos()));
         dto.setPrevencoesManha(checkout.getPrevencoesManha());
         dto.setPrevencoesTarde(checkout.getPrevencoesTarde());

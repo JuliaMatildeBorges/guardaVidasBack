@@ -20,17 +20,20 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class Usuario extends BaseEntity {
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "nome", nullable = false)
+    private String nome;
+
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "cpf")
+    @Column(name = "cpf", nullable = false, unique = true)
     private String cpf;
 
     @Column(name = "senha", nullable = false)
     private String senha;       
 
     @Column(name = "nivel_acesso", nullable = false)
-    private NivelAcesso nivelAcesso = NivelAcesso.PADRAO;
+    private NivelAcesso nivelAcesso = NivelAcesso.USUARIO;
 
     @Column(name = "tipo_usuario")
     private String tipoUsuario;

@@ -99,7 +99,7 @@ public class RelatorioService {
 
                 // Salva-vidas
                 Cell c3 = row.createCell(3);
-                c3.setCellValue(c.getUsuario() != null ? c.getUsuario().getEmail() : "N/D");
+                c3.setCellValue(c.getUsuario() != null ? c.getUsuario().getNome() : "N/D");
                 c3.setCellStyle(dataStyle);
 
                 // Prevenções Manhã
