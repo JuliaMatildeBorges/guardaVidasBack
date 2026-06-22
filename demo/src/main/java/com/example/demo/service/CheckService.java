@@ -42,6 +42,7 @@ public class CheckService {
     @Autowired
     private org.springframework.core.env.Environment env;
 
+    @jakarta.transaction.Transactional
     public CheckinResponseDTO checkin(CheckinDTO dto){
         
         // Valida se a foto foi tirada em tempo real no momento da captura
@@ -74,9 +75,11 @@ public class CheckService {
         List<Arquivo> arquivos = fotos.stream().map(arquivoService::upload).toList();
 
         checkin.getFotos().addAll(arquivos);
-        checkin.setFoto(checkin.getFotos().get(0));
+        // Campo legado foto_id fica nulo; a lista fotos é a fonte oficial das imagens.
+        checkin.setFoto(null);
 
-        Checkin checkinSalvo = checkinRepository.save(checkin);
+        // Flush imediato para detectar problemas de FK/coluna ainda dentro da transação do checkin.
+        Checkin checkinSalvo = checkinRepository.saveAndFlush(checkin);
         CheckinResponseDTO crd = new CheckinResponseDTO();
 
         crd.setPosto(posto.getNome());
@@ -145,6 +148,8 @@ public class CheckService {
     public void limparTodosOsDados() {
         checkinRepository.deleteAll();
         checkoutRespository.deleteAll();
+        checkinRepository.flush();
+        checkoutRespository.flush();
         arquivoService.excluirTodosOsArquivos();
     }
 

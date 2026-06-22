@@ -63,7 +63,8 @@ public class ArquivoService {
             arquivo.setTipo(file.getContentType());
 
 
-            return arquivoRepository.save(arquivo);
+            // Garante que a linha de arquivo exista no banco antes de checkin/checkout gravar foto_id.
+            return arquivoRepository.saveAndFlush(arquivo);
         } catch (IOException e) {
             throw new RuntimeException("Erro ao salvar o arquivo", e);
         }

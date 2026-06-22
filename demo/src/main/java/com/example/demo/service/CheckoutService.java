@@ -39,6 +39,7 @@ public class CheckoutService {
     @Autowired
     private CheckService checkService;
 
+    @jakarta.transaction.Transactional
     public CheckoutResponseDTO checkout(CheckoutDTO dto){
         
         // Valida se a foto foi tirada em tempo real no momento da captura
@@ -76,9 +77,11 @@ public class CheckoutService {
         List<Arquivo> arquivos = fotos.stream().map(arquivoService::upload).toList();
 
         checkout.getFotos().addAll(arquivos);
-        checkout.setFoto(checkout.getFotos().get(0));
+        // Campo legado foto_id fica nulo; a lista fotos é a fonte oficial das imagens.
+        checkout.setFoto(null);
 
-        Checkout checkoutSalvo = checkoutRespository.save(checkout);
+        // Flush imediato para detectar problemas de FK/coluna ainda dentro da transação do checkout.
+        Checkout checkoutSalvo = checkoutRespository.saveAndFlush(checkout);
         CheckoutResponseDTO crd = new CheckoutResponseDTO();
 
         crd.setPosto(posto.getNome());

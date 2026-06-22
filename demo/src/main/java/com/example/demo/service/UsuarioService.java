@@ -109,3 +109,4 @@ public class UsuarioService extends BaseService<Usuario, UsuarioDTO> {
     }
 
 }
+
